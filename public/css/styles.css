@@ -1,0 +1,212 @@
+/* Enlaços */
+a {
+    color: red;
+    text-decoration: none;
+}
+
+/* Reset & base*/
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #0f0f0f;
+    color: #eee;
+    min-height: 100vh;
+}
+
+/* Pàgina principal – capçalera*/
+header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    border-bottom: 2px solid #e94560;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+header p {
+    color: #aaa;
+    margin-top: .5rem;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: #555;
+    font-size: .85rem;
+}
+
+/* Grid de tarjetes*/
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 0 1rem;
+}
+
+.card {
+    background: #1a1a2e;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2a2a4a;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(233, 69, 96, .35);
+}
+
+.card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-body h2 {
+    font-size: 1.1rem;
+    margin-bottom: .4rem;
+    color: #fff;
+}
+
+.empty {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+}
+
+/* Pàgina de detall*/
+.back-bar {
+    background: #1a1a2e;
+    padding: .8rem 1.5rem;
+    border-bottom: 1px solid #2a2a4a;
+}
+
+.back-bar a {
+    color: #e94560;
+    text-decoration: none;
+    font-size: .9rem;
+}
+
+.back-bar a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 1rem 4rem;
+}
+
+.hero {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.hero img {
+    width: 260px;
+    height: 300px;
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 12px;
+    border: 3px solid #e94560;
+    flex-shrink: 0;
+}
+
+.hero-info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.hero-info h1 {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: .6rem;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+    color: #ccc;
+    font-size: .95rem;
+}
+
+.info-row strong {
+    color: #fff;
+}
+
+/* Badge d'estil musical*/
+.badge {
+    background: #e94560;
+    color: #fff;
+    font-size: .8rem;
+    padding: .25rem .7rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+/* Secció de biografia*/
+.bio-section {
+    margin-bottom: 2rem;
+}
+
+.bio-section h3,
+.video-wrap h3 {
+    color: #e94560;
+    font-size: 1.1rem;
+    margin-bottom: .6rem;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: .3rem;
+}
+
+.bio-section p {
+    line-height: 1.75;
+    color: #ccc;
+}
+
+/* Vídeo de YouTube incrustat*/
+.iframe-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 2px solid #2a2a4a;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
