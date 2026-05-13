@@ -6,6 +6,7 @@ use Slim\Factory\AppFactory;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $dbFile = __DIR__ . '/../dataBase/musics.db';
+
 if (!is_dir(dirname($dbFile))) {
     mkdir(dirname($dbFile), 0755, true);
 }
@@ -15,57 +16,68 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $app = AppFactory::create();
 
+// Funció per convertir URL de YouTube a format embed (per poder afegirlo al iframe)
+function youtubeEmbedUrl(string $url): string {
+    $videoId = '';
+    if (preg_match('/youtu\.be\/([a-zA-Z0-9_-]{11})/', $url, $m)) {
+        $videoId = $m[1];
+    } elseif (preg_match('/[?&]v=([a-zA-Z0-9_-]{11})/', $url, $m)) {
+        $videoId = $m[1];
+    } elseif (preg_match('/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/', $url, $m)) {
+        $videoId = $m[1];
+    }
+    return $videoId ? 'https://www.youtube.com/embed/' . $videoId : '';
+}
+
+// Ruta principal: llista de musics
 $app->get('/', function (Request $request, Response $response) use ($pdo) {
-    $stmt = $pdo->query('SELECT id, img_url, estil_musica, nom_music FROM musics ORDER BY id DESC');
+    $stmt = $pdo->query('SELECT id, img_url, estil_musica, nom_music FROM musics ORDER BY id ASC');
     $musics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $items = '';
+    $estils = [1=>'Rock', 2=>'Pop', 3=>'Jazz', 4=>'Hip-Hop', 5=>'Reggae', 6=>'Clàssica'];
+
+    $cards = '';
     foreach ($musics as $music) {
-        $items .= sprintf(
-            '<li><a href="/music/%s">%s</a> <small>(%s)</small></li>',
-            htmlspecialchars($music['id'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($music['nom_music'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($music['estil_musica'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($music['img_url'], ENT_QUOTES, 'UTF-8')
-        );
+        $estilNom = htmlspecialchars($estils[$music['estil_musica']] ?? $music['estil_musica'], ENT_QUOTES, 'UTF-8');
+        $imgUrl = htmlspecialchars($music['img_url'], ENT_QUOTES, 'UTF-8');
+        $nom = htmlspecialchars($music['nom_music'], ENT_QUOTES, 'UTF-8');
+        $id = (int) $music['id'];
+        $cards .= "
+            <div class='card'>
+                <a href='/music/{$id}'>
+                    <img src='{$imgUrl}' alt='{$nom}'>
+                    <div class='card-body'>
+                        <h2>{$nom}</h2>
+                        <span class='badge'>{$estilNom}</span>
+                    </div>
+                </a>
+            </div>";
     }
 
-    if ($items === '') {
-        $items = '<li>No hi ha musics disponibles.</li>';
+    if ($cards === '') {
+        $cards = '<p class="empty">No hi ha musics disponibles.</p>';
     }
+
+    $htmlContent = '
+    <!DOCTYPE html>
+        <html lang="ca">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>TO BE SLIM OR NOT TO BE SLIM</title>
+            <link rel="stylesheet" href="/css/styles.css">
+        </head>
+        <body>
+            <header>
+                <h1>Músics</h1>
+            </header>
+            <div class="grid">' . $cards . '</div>
+            <footer><a href="https://github.com/21adannrioss" target="_blank">21adannrioss</a> | <a href="https://github.com/Xavi-H" target="_blank">Xavi-H</a></footer>
+        </body>
+    </html>';
 
     $response->getBody()->write($htmlContent);
-    return $response->withHeader('Content-Type', 'text/html');
+    return $response->withHeader('Content-Type', 'text/html; charset=UTF-8');
 });
 
-$app->get('/music/{id:[0-9]+}', function (Request $request, Response $response, array $args) use ($pdo) {
-    $stmt = $pdo->prepare('SELECT img_url, estil_musica, nom_music, albums, biografia FROM musics WHERE id = ?');
-    $stmt->execute([$args['id']]);
-    $music = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$music) {
-        $response->getBody()->write('<h1>No s\'ha trobat la música</h1>');
-        return $response->withStatus(404)->withHeader('Content-Type', 'text/html');
-    }
-
-    $htmlContent = "<!DOCTYPE html>
-    <html lang='ca'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <title>" . htmlspecialchars($music['nom_music'], ENT_QUOTES, 'UTF-8') . "</title>
-        <link rel='icon' type='image/svg+xml' href='/media/favicon.svg'>
-        <link rel='stylesheet' href='/media/styles.css'>
-    </head>
-    <body>
-        <div class='container'>
-            <h1>" . htmlspecialchars($music['nom_music'], ENT_QUOTES, 'UTF-8') . "</h1>
-            <div><img src='" . htmlspecialchars($music['img_url'], ENT_QUOTES, 'UTF-8') . "' alt='" . htmlspecialchars($music['nom_music'], ENT_QUOTES, 'UTF-8') . "'></div>
-            <p>Estil de música: " . htmlspecialchars($music['estil_musica'], ENT_QUOTES, 'UTF-8') . "</p>
-            <p>Àlbums: " . htmlspecialchars($music['albums'], ENT_QUOTES, 'UTF-8') . "</p>
-            <p>Biografia: " . nl2br(htmlspecialchars($music['biografia'], ENT_QUOTES, 'UTF-8')) . "</p>
-            <p><a href='/'>Tornar a la llista</a></p>
-        </div>
-    </body>
-    </html>";
-});
+$app->run();
