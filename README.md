@@ -6,9 +6,7 @@ Web de biografies de músics construïda amb **Slim Framework (PHP)** amb un dis
 
 ## Vídeo de demostració
 
-```
-
-```
+[![0613-A20](https://img.youtube.com/vi/UwM036UZyC0/maxresdefault.jpg)](https://www.youtube.com/watch?v=UwM036UZyC0)
 
 ---
 
